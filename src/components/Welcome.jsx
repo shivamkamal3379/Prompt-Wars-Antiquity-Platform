@@ -82,3 +82,9 @@ export default function Welcome({ onEnter }) {
     </div>
   );
 }
+
+import PropTypes from 'prop-types';
+
+Welcome.propTypes = {
+  onEnter: PropTypes.func.isRequired,
+};

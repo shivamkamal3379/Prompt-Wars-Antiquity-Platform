@@ -432,3 +432,19 @@ export default function CarbonCalculator({ inputs, setInputs }) {
     </div>
   );
 }
+
+import PropTypes from 'prop-types';
+
+CarbonCalculator.propTypes = {
+  inputs: PropTypes.shape({
+    electricity: PropTypes.number.isRequired,
+    gas: PropTypes.number.isRequired,
+    carDist: PropTypes.number.isRequired,
+    carType: PropTypes.string.isRequired,
+    publicTransit: PropTypes.number.isRequired,
+    flightsShort: PropTypes.number.isRequired,
+    flightsLong: PropTypes.number.isRequired,
+    diet: PropTypes.string.isRequired,
+  }).isRequired,
+  setInputs: PropTypes.func.isRequired,
+};

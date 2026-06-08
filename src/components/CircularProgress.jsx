@@ -98,3 +98,16 @@ export default function CircularProgress({ value = 0, max = 15, status }) {
     </div>
   );
 }
+
+import PropTypes from 'prop-types';
+
+CircularProgress.propTypes = {
+  value: PropTypes.number.isRequired,
+  max: PropTypes.number,
+  status: PropTypes.shape({
+    color: PropTypes.string.isRequired,
+    strokeColor: PropTypes.string.isRequired,
+    badge: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+  }).isRequired,
+};

@@ -260,8 +260,8 @@ export default function AIAdvisor({ inputs, emissions }) {
         throw new Error(data.error?.message || 'Invalid response format from Gemini API.');
       }
     } catch (error) {
-      console.error('Gemini API call failed, using fallback:', error);
-      return `⚠️ **Gemini API Error:** ${error.message}\n\n*Falling back to Antiquity Local AI Engine:*\n\n` + generateSimulatedReply(userPrompt);
+      console.warn('Gemini API call warning (using fallback engine):', error.message);
+      return `⚠️ **Gemini API Key Required or Offline Fallback Active:** Using Antiquity Local AI Engine.\n\n` + generateSimulatedReply(userPrompt);
     } finally {
       setIsLoading(false);
     }
@@ -435,6 +435,8 @@ export default function AIAdvisor({ inputs, emissions }) {
       {/* Chat Input */}
       <div className="p-3 border-t border-slate-800/80 bg-slate-900/20 flex gap-2 items-center">
         <input
+          id="chat-input"
+          aria-label="Ask Antiquity AI Advisor"
           type="text"
           placeholder="Ask Antiquity AI Advisor..."
           value={inputValue}
@@ -454,3 +456,27 @@ export default function AIAdvisor({ inputs, emissions }) {
     </div>
   );
 }
+
+import PropTypes from 'prop-types';
+
+AIAdvisor.propTypes = {
+  inputs: PropTypes.shape({
+    electricity: PropTypes.number.isRequired,
+    gas: PropTypes.number.isRequired,
+    carDist: PropTypes.number.isRequired,
+    carType: PropTypes.string.isRequired,
+    publicTransit: PropTypes.number.isRequired,
+    flightsShort: PropTypes.number.isRequired,
+    flightsLong: PropTypes.number.isRequired,
+    diet: PropTypes.string.isRequired,
+  }).isRequired,
+  emissions: PropTypes.shape({
+    total: PropTypes.number.isRequired,
+    categories: PropTypes.shape({
+      energy: PropTypes.number.isRequired,
+      transport: PropTypes.number.isRequired,
+      flights: PropTypes.number.isRequired,
+      diet: PropTypes.number.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
