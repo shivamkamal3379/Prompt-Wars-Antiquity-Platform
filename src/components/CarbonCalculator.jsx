@@ -41,11 +41,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
       {/* Electricity Input */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+          <label htmlFor="electricity-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
             <Zap size={16} />
             Electricity Usage (kWh/month)
           </label>
           <input
+            id="electricity-input"
             type="number"
             value={inputs.electricity}
             onChange={(e) => handleInputChange('electricity', Math.max(0, parseInt(e.target.value) || 0))}
@@ -53,6 +54,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
           />
         </div>
         <input
+          id="electricity-range"
+          aria-label="Electricity Usage Slider"
           type="range"
           min="0"
           max="1500"
@@ -71,11 +74,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
       {/* Gas / Heating Input */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+          <label htmlFor="gas-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
             <Flame size={16} />
             Heating & Gas (kWh/month)
           </label>
           <input
+            id="gas-input"
             type="number"
             value={inputs.gas}
             onChange={(e) => handleInputChange('gas', Math.max(0, parseInt(e.target.value) || 0))}
@@ -83,6 +87,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
           />
         </div>
         <input
+          id="gas-range"
+          aria-label="Heating and Gas Slider"
           type="range"
           min="0"
           max="1500"
@@ -142,11 +148,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
         {inputs.carType !== 'none' && (
           <div className="space-y-2 animate-scale-in">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+              <label htmlFor="car-dist-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
                 <Car size={16} />
                 Car Commute Distance (km/month)
               </label>
               <input
+                id="car-dist-input"
                 type="number"
                 value={inputs.carDist}
                 onChange={(e) => handleInputChange('carDist', Math.max(0, parseInt(e.target.value) || 0))}
@@ -154,6 +161,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
               />
             </div>
             <input
+              id="car-dist-range"
+              aria-label="Car Commute Distance Slider"
               type="range"
               min="0"
               max="3000"
@@ -173,11 +182,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
         {/* Public transit hours */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+            <label htmlFor="transit-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
               <Train size={16} />
               Public Transit Travel (hours/month)
             </label>
             <input
+              id="transit-input"
               type="number"
               value={inputs.publicTransit}
               onChange={(e) => handleInputChange('publicTransit', Math.max(0, parseInt(e.target.value) || 0))}
@@ -185,6 +195,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
             />
           </div>
           <input
+            id="transit-range"
+            aria-label="Public Transit Travel Slider"
             type="range"
             min="0"
             max="150"
@@ -212,11 +224,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
       {/* Short Haul Flights */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+          <label htmlFor="flights-short-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
             <Plane size={16} className="rotate-45" />
             Short-Haul Flights (hours/year)
           </label>
           <input
+            id="flights-short-input"
             type="number"
             value={inputs.flightsShort}
             onChange={(e) => handleInputChange('flightsShort', Math.max(0, parseInt(e.target.value) || 0))}
@@ -224,6 +237,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
           />
         </div>
         <input
+          id="flights-short-range"
+          aria-label="Short-Haul Flights Slider"
           type="range"
           min="0"
           max="100"
@@ -242,11 +257,12 @@ export default function CarbonCalculator({ inputs, setInputs }) {
       {/* Long Haul Flights */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-sm font-semibold flex items-center gap-2 text-eco-300">
+          <label htmlFor="flights-long-input" className="text-sm font-semibold flex items-center gap-2 text-eco-300">
             <Plane size={16} />
             Long-Haul Flights (hours/year)
           </label>
           <input
+            id="flights-long-input"
             type="number"
             value={inputs.flightsLong}
             onChange={(e) => handleInputChange('flightsLong', Math.max(0, parseInt(e.target.value) || 0))}
@@ -254,6 +270,8 @@ export default function CarbonCalculator({ inputs, setInputs }) {
           />
         </div>
         <input
+          id="flights-long-range"
+          aria-label="Long-Haul Flights Slider"
           type="range"
           min="0"
           max="200"
