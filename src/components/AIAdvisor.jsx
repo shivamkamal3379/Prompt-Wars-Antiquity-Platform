@@ -1,86 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Send, Bot, Sparkles, AlertCircle, Key, ChevronDown, ChevronUp } from 'lucide-react';
+import PropTypes from 'prop-types';
+
+// Global message ID generator to keep React component render pure
+let messageIdCounter = 0;
+const generateMessageId = () => `antiquity-msg-${Date.now()}-${++messageIdCounter}`;
 
 export default function AIAdvisor({ inputs, emissions }) {
-  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [apiKey, setApiKey] = useState(import.meta.env.VITE_GEMINI_API_KEY || '');
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef(null);
-
-  // Auto-scroll to the bottom of the chat without shifting the page viewport
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom();
-    }
-  }, [messages, isLoading]);
-
-  // Initial welcome message and automatic update when calculator state changes
-  useEffect(() => {
-    const welcome = generateInitialReport();
-    setMessages([
-      {
-        id: 'welcome',
-        sender: 'ai',
-        text: welcome,
-        timestamp: new Date()
-      }
-    ]);
-  }, [inputs, emissions.total]);
-
-  // Inline markdown renderer to output clean styled JSX
-  const parseInlineMarkdown = (text) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={index} className="font-bold text-eco-300">{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
-  };
-
-  const renderMarkdown = (text) => {
-    if (!text) return null;
-    const lines = text.split('\n');
-    return lines.map((line, i) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('### ')) {
-        return <h4 key={i} className="text-sm font-bold text-eco-400 mt-3 mb-1">{trimmed.replace('### ', '')}</h4>;
-      }
-      if (trimmed.startsWith('## ')) {
-        return <h3 key={i} className="text-base font-bold text-eco-300 mt-4 mb-2">{trimmed.replace('## ', '')}</h3>;
-      }
-      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-        return (
-          <li key={i} className="list-disc list-inside text-xs text-slate-300 ml-2 mb-1 leading-relaxed">
-            {parseInlineMarkdown(trimmed.substring(2))}
-          </li>
-        );
-      }
-      if (/^\d+\.\s/.test(trimmed)) {
-        const match = trimmed.match(/^(\d+\.\s)(.*)/);
-        return (
-          <li key={i} className="list-decimal list-inside text-xs text-slate-300 ml-2 mb-1 leading-relaxed">
-            {parseInlineMarkdown(match[2])}
-          </li>
-        );
-      }
-      if (trimmed === '') {
-        return <div key={i} className="h-2" />;
-      }
-      return <p key={i} className="text-xs text-slate-300 leading-relaxed mb-1.5">{parseInlineMarkdown(line)}</p>;
-    });
-  };
 
   // Generate a customized initial report based on the calculator inputs
   const generateInitialReport = () => {
@@ -98,7 +29,7 @@ export default function AIAdvisor({ inputs, emissions }) {
     const highest = categories[0];
 
     let advice = `### Antiquity AI Executive Assessment 🌍\n`;
-    advice += `Hello! I have analyzed your carbon footprint details. Your total emissions stand at **${total.toFixed(2)} metric tons of CO₂e/year**.\n\n`;
+    advice += `Hey Shivam, I have analyzed your carbon footprint details. Your total emissions stand at **${total.toFixed(2)} metric tons of CO₂e/year**.\n\n`;
 
     if (total < 2.0) {
       advice += `🌟 **Outstanding!** Your lifestyle matches the IPCC 1.5°C climate stabilizer goal of **< 2.0 tons/year**. You are already a climate champion!\n\n`;
@@ -151,13 +82,85 @@ export default function AIAdvisor({ inputs, emissions }) {
     return advice;
   };
 
+  // Initialize messages state lazily using the report generator (prevents cascading renders)
+  const [messages, setMessages] = useState(() => [
+    {
+      id: generateMessageId(),
+      sender: 'ai',
+      text: generateInitialReport(),
+      timestamp: new Date()
+    }
+  ]);
+
+  // Auto-scroll to the bottom of the chat without shifting the page viewport
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages, isLoading]);
+
+  // Inline markdown renderer to output clean styled JSX
+  const parseInlineMarkdown = (text) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} className="font-bold text-eco-300">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  const renderMarkdown = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+    return lines.map((line, i) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('### ')) {
+        return <h4 key={i} className="text-sm font-bold text-eco-400 mt-3 mb-1">{trimmed.replace('### ', '')}</h4>;
+      }
+      if (trimmed.startsWith('## ')) {
+        return <h3 key={i} className="text-base font-bold text-eco-300 mt-4 mb-2">{trimmed.replace('## ', '')}</h3>;
+      }
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        return (
+          <li key={i} className="list-disc list-inside text-xs text-slate-300 ml-2 mb-1 leading-relaxed">
+            {parseInlineMarkdown(trimmed.substring(2))}
+          </li>
+        );
+      }
+      if (/^\d+\.\s/.test(trimmed)) {
+        const match = trimmed.match(/^(\d+\.\s)(.*)/);
+        if (match) {
+          return (
+            <li key={i} className="list-decimal list-inside text-xs text-slate-300 ml-2 mb-1 leading-relaxed">
+              {parseInlineMarkdown(match[2])}
+            </li>
+          );
+        }
+      }
+      if (trimmed === '') {
+        return <div key={i} className="h-2" />;
+      }
+      return <p key={i} className="text-xs text-slate-300 leading-relaxed mb-1.5">{parseInlineMarkdown(line)}</p>;
+    });
+  };
+
   // Simulated AI responses for specific user keywords
   const generateSimulatedReply = (query) => {
     const q = query.toLowerCase();
     
     if (q.includes('transport') || q.includes('car') || q.includes('commute') || q.includes('bike') || q.includes('transit')) {
       return `### Transport Footprint Deconstruction 🚲\n` +
-             `To reduce transport emissions (currently **${emissions.categories.transport} tons/yr**):\n\n` +
+             `Hey Shivam, to reduce your transport emissions (currently **${emissions.categories.transport} tons/yr**):\n\n` +
              `*   **Telecommuting:** Working from home just 2 days a week cuts vehicle emissions by **40%**.\n` +
              `*   **Active Commuting:** Cycling or walking for journeys under 3km completely negates emissions. For a 10km weekly ride, you save ~**85kg of CO₂/year**.\n` +
              `*   **Eco-Driving:** Accelerate smoothly, maintain tyre pressure, and avoid idling. This improves fuel economy by **10-15%**.\n` +
@@ -166,7 +169,7 @@ export default function AIAdvisor({ inputs, emissions }) {
     
     if (q.includes('energy') || q.includes('electricity') || q.includes('solar') || q.includes('power') || q.includes('gas') || q.includes('heating')) {
       return `### Household Energy Optimization 💡\n` +
-             `Your home energy accounts for **${emissions.categories.energy} tons/yr**:\n\n` +
+             `Hey Shivam, your home energy accounts for **${emissions.categories.energy} tons/yr**:\n\n` +
              `*   **Vampire Draw:** Unplug chargers, gaming systems, and TVs. Standby energy represents ~**10%** of an average electric bill.\n` +
              `*   **Heat Pump Conversion:** Replacing gas heaters with electric heat pumps reduces heating emissions by **60-80%** depending on grid greenness.\n` +
              `*   **Solar ROI:** A standard 5kW residential solar setup eliminates carbon from electricity entirely, paying for itself in 6-8 years.\n` +
@@ -175,7 +178,7 @@ export default function AIAdvisor({ inputs, emissions }) {
 
     if (q.includes('diet') || q.includes('food') || q.includes('meat') || q.includes('vegan') || q.includes('vegetarian')) {
       return `### Diet & Agricultural Impact 🍏\n` +
-             `Your food choices emit **${emissions.categories.diet} tons/yr**:\n\n` +
+             `Hey Shivam, your food choices emit **${emissions.categories.diet} tons/yr**:\n\n` +
              `*   **Red Meat Reality:** Beef produces **60kg of greenhouse gases per kg of meat**—more than 10x poultry or tofu.\n` +
              `*   **Food Waste:** 30% of global food is wasted. Buying only what you need and composting scraps reduces methane emissions from landfills.\n` +
              `*   **Local & Seasonal:** Buying seasonal produce reduces energy spent on cold storage and greenhouses.\n` +
@@ -184,7 +187,7 @@ export default function AIAdvisor({ inputs, emissions }) {
 
     if (q.includes('flight') || q.includes('plane') || q.includes('travel') || q.includes('aviation')) {
       return `### Aviation Emissions Overview ✈️\n` +
-             `Aviation emits **${emissions.categories.flights} tons/yr** in your profile:\n\n` +
+             `Hey Shivam, aviation emits **${emissions.categories.flights} tons/yr** in your profile:\n\n` +
              `*   **Radiative Forcing:** Aircraft emissions at altitude create vapor trails (cirrus clouds) which trap heat, causing **double** the warming effect of ground emissions.\n` +
              `*   **Alternative travel:** For trips under 600km, high-speed rail is **90% cleaner** than flying.\n` +
              `*   **Economy vs First:** First-class seats occupy more space and weight, giving them a carbon footprint **3x higher** than economy tickets.`;
@@ -199,7 +202,7 @@ export default function AIAdvisor({ inputs, emissions }) {
     }
 
     return `### Antiquity AI Advisor Response 💬\n` +
-           `Thank you for asking! Reducing your footprint of **${emissions.total.toFixed(2)} tons** is highly achievable through cumulative daily actions.\n\n` +
+           `Thank you Shivam for asking! Reducing your footprint of **${emissions.total.toFixed(2)} tons** is highly achievable through cumulative daily actions.\n\n` +
            `To explore further, try asking about one of these core topics:\n` +
            `*   **"How can I cut commuting emissions?"**\n` +
            `*   **"What is the impact of solar panels?"**\n` +
@@ -242,7 +245,7 @@ export default function AIAdvisor({ inputs, emissions }) {
                     - Long-haul flight hours: ${inputs.flightsLong} hours/year
                     - Diet type: ${inputs.diet}
 
-                    Provide highly specific, actionable, encouraging suggestions matching these values. Use exact numeric predictions if helpful. Format your output using clear markdown (subheadings, lists, bold text). Keep responses concise (around 150-200 words).
+                    Provide highly specific, actionable, encouraging suggestions matching these values. Always address the user as Shivam. Use exact numeric predictions if helpful. Format your output using clear markdown (subheadings, lists, bold text). Keep responses concise (around 150-200 words).
                     
                     User Question: ${userPrompt}`
                   }
@@ -271,7 +274,7 @@ export default function AIAdvisor({ inputs, emissions }) {
     if (!textToSend.trim()) return;
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: generateMessageId(),
       sender: 'user',
       text: textToSend,
       timestamp: new Date()
@@ -281,7 +284,7 @@ export default function AIAdvisor({ inputs, emissions }) {
     setInputValue('');
     setIsLoading(true);
 
-    let aiResponseText = '';
+    let aiResponseText;
     if (apiKey.trim()) {
       aiResponseText = await callGeminiAPI(textToSend);
     } else {
@@ -292,9 +295,9 @@ export default function AIAdvisor({ inputs, emissions }) {
     }
 
     const aiMessage = {
-      id: (Date.now() + 1).toString(),
+      id: generateMessageId(),
       sender: 'ai',
-      text: aiResponseText,
+      text: aiResponseText || 'Unable to generate reply.',
       timestamp: new Date()
     };
 
@@ -456,8 +459,6 @@ export default function AIAdvisor({ inputs, emissions }) {
     </div>
   );
 }
-
-import PropTypes from 'prop-types';
 
 AIAdvisor.propTypes = {
   inputs: PropTypes.shape({

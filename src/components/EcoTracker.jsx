@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Award, CheckSquare, Square, Flame, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Award, Flame, CheckCircle2 } from 'lucide-react';
 
 const INITIAL_CHALLENGES = [
   { id: 'plastic', title: 'Zero Single-Use Plastic', desc: 'Avoid plastic bags, bottles, or packaging today.', xp: 25 },

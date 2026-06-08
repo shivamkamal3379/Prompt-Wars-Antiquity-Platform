@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 /**
  * Circular progress gauge representing carbon footprint levels.
@@ -20,7 +20,6 @@ export default function CircularProgress({ value = 0, max = 15, status }) {
 
   // Outer dots ring parameters
   const dotRadius = radius + 14;
-  const dotCircumference = dotRadius * 2 * Math.PI;
 
   return (
     <div className="flex flex-col items-center justify-center p-2 relative select-none">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Leaf, Sparkles, ArrowRight } from 'lucide-react';
 
 /**
