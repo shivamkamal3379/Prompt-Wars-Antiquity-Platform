@@ -103,6 +103,8 @@ export default function EcoTracker() {
               <button
                 key={challenge.id}
                 onClick={() => toggleChallenge(challenge.id, challenge.xp)}
+                aria-pressed={isDone}
+                aria-label={`Toggle daily challenge: ${challenge.title}`}
                 className={`w-full p-2.5 rounded-xl border text-left flex items-start justify-between gap-3 transition-all duration-200 ${
                   isDone
                     ? 'border-eco-500/40 bg-eco-950/20 hover:bg-eco-950/30'
@@ -156,7 +158,9 @@ export default function EcoTracker() {
                       : 'border-slate-800 bg-slate-900/20 opacity-30 scale-90 filter grayscale'
                   }`}
                 >
-                  {badge.icon}
+                  <span role="img" aria-label={badge.name}>
+                    {badge.icon}
+                  </span>
                 </div>
                 <span className={`text-[8px] font-bold mt-1 text-center truncate w-full ${isUnlocked ? 'text-gold-300' : 'text-slate-600'}`}>
                   {badge.name}
